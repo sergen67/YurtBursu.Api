@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using YurtBursu.Api.Data;
 using YurtBursu.Api.Middleware;
 using YurtBursu.Api.Repositories;
@@ -19,7 +20,33 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.OperationFilter<FileUploadOperationFilter>();
     c.CustomSchemaIds(type => type.ToString());
+
+    // Basic Auth Definition
+    c.AddSecurityDefinition("basic", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "basic",
+        In = ParameterLocation.Header,
+        Description = "Basic Authorization header using the Bearer scheme."
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "basic"
+                }
+            },
+            new string[] {}
+        }
+    });
 });
+
 builder.Services.AddCors(options =>
 {
 	options.AddPolicy("DefaultCors", policy =>
@@ -27,6 +54,7 @@ builder.Services.AddCors(options =>
 		policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
 	});
 });
+
 // DbContext - MSSQL
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>
