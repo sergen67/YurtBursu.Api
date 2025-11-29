@@ -95,7 +95,7 @@ namespace YurtBursu.Api.Migrations
                     b.Property<string>("Token")
                         .IsRequired()
                         .HasMaxLength(4096)
-                        .HasColumnType("nvarchar(4096)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 

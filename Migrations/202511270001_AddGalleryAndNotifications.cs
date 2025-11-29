@@ -32,7 +32,7 @@ namespace YurtBursu.Api.Migrations
 					Id = table.Column<int>(type: "int", nullable: false)
 						.Annotation("SqlServer:Identity", "1, 1"),
 					StudentId = table.Column<int>(type: "int", nullable: false),
-					Token = table.Column<string>(type: "nvarchar(4096)", maxLength: 4096, nullable: false),
+					Token = table.Column<string>(type: "nvarchar(max)", nullable: false),
 					CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
 				},
 				constraints: table =>
@@ -45,12 +45,6 @@ namespace YurtBursu.Api.Migrations
 						principalColumn: "Id",
 						onDelete: ReferentialAction.Cascade);
 				});
-
-			migrationBuilder.CreateIndex(
-				name: "IX_NotificationTokens_Token",
-				table: "NotificationTokens",
-				column: "Token",
-				unique: true);
 
 			migrationBuilder.CreateIndex(
 				name: "IX_NotificationTokens_StudentId",
