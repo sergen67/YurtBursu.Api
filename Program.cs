@@ -15,6 +15,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     c.OperationFilter<FileUploadOperationFilter>();
+    c.CustomSchemaIds(type => type.ToString());
 });
 builder.Services.AddCors(options =>
 {

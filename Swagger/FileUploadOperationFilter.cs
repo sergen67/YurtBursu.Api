@@ -12,26 +12,39 @@ namespace YurtBursu.Api.Swagger
 
             if (!fileParams.Any()) return;
 
-            operation.RequestBody = new OpenApiRequestBody
+            // Ensure RequestBody exists
+            operation.RequestBody ??= new OpenApiRequestBody { Content = new Dictionary<string, OpenApiMediaType>() };
+
+            // Ensure multipart/form-data media type exists
+            if (!operation.RequestBody.Content.TryGetValue("multipart/form-data", out var uploadMediaType))
             {
-                Content =
+                uploadMediaType = new OpenApiMediaType
                 {
-                    ["multipart/form-data"] = new OpenApiMediaType
+                    Schema = new OpenApiSchema
                     {
-                        Schema = new OpenApiSchema
-                        {
-                            Type = "object",
-                            Properties = fileParams.ToDictionary(
-                                p => p.Name ?? "file",
-                                p => new OpenApiSchema
-                                {
-                                    Type = "string",
-                                    Format = "binary"
-                                })
-                        }
+                        Type = "object",
+                        Properties = new Dictionary<string, OpenApiSchema>()
                     }
+                };
+                operation.RequestBody.Content["multipart/form-data"] = uploadMediaType;
+            }
+
+            // Ensure Schema and Properties exist
+            uploadMediaType.Schema ??= new OpenApiSchema { Type = "object", Properties = new Dictionary<string, OpenApiSchema>() };
+            uploadMediaType.Schema.Properties ??= new Dictionary<string, OpenApiSchema>();
+
+            foreach (var param in fileParams)
+            {
+                var name = param.Name ?? "file";
+                if (!uploadMediaType.Schema.Properties.ContainsKey(name))
+                {
+                    uploadMediaType.Schema.Properties[name] = new OpenApiSchema
+                    {
+                        Type = "string",
+                        Format = "binary"
+                    };
                 }
-            };
+            }
         }
     }
 }
