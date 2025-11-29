@@ -9,7 +9,7 @@ WORKDIR /src
 COPY YurtBursu.Api.csproj .
 RUN dotnet restore YurtBursu.Api.csproj
 
-# Copy all source files
+# Copy all source files - Models folder MUST be included
 COPY Controllers/ ./Controllers/
 COPY Data/ ./Data/
 COPY DTOs/ ./DTOs/
@@ -20,9 +20,6 @@ COPY Repositories/ ./Repositories/
 COPY Services/ ./Services/
 COPY Program.cs .
 COPY appsettings.json .
-
-# Verify Models folder is copied (for debugging)
-RUN ls -la Models/ || dir Models
 
 # Build and publish
 RUN dotnet publish YurtBursu.Api.csproj -c Release -o /app/publish
