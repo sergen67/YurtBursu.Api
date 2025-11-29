@@ -57,6 +57,55 @@ namespace YurtBursu.Api.Migrations
                     b.ToTable("BursHistories", (string)null);
                 });
 
+            modelBuilder.Entity("YurtBursu.Api.Models.GalleryItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasMaxLength(2048)
+                        .HasColumnType("nvarchar(2048)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Gallery", (string)null);
+                });
+
+            modelBuilder.Entity("YurtBursu.Api.Models.NotificationToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(4096)
+                        .HasColumnType("nvarchar(4096)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StudentId");
+
+                    b.HasIndex("Token");
+
+                    b.ToTable("NotificationTokens", (string)null);
+                });
+
             modelBuilder.Entity("YurtBursu.Api.Models.Student", b =>
                 {
                     b.Property<int>("Id")
@@ -95,6 +144,15 @@ namespace YurtBursu.Api.Migrations
                         .IsRequired();
 
                     b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("YurtBursu.Api.Models.NotificationToken", b =>
+                {
+                    b.HasOne("YurtBursu.Api.Models.Student", null)
+                        .WithMany()
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("YurtBursu.Api.Models.Student", b =>
