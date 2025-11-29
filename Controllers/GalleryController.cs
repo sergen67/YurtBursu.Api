@@ -19,7 +19,7 @@ namespace YurtBursu.Api.Controllers
 		/// Uploads an image file to the gallery. Protected by BasicAuth middleware.
 		/// </summary>
 		[HttpPost("upload")]
-		public async Task<ActionResult<GalleryItem>> Upload([FromForm] IFormFile file, CancellationToken cancellationToken)
+		public async Task<ActionResult<GalleryItem>> Upload(IFormFile file, CancellationToken cancellationToken)
 		{
 			var item = await _galleryService.UploadImageAsync(file, cancellationToken);
 			return Ok(item);
