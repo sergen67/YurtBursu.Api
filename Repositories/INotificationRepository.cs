@@ -8,5 +8,3 @@ namespace YurtBursu.Api.Repositories
 		Task<List<string>> GetAllTokensAsync(CancellationToken cancellationToken = default);
 	}
 }
-
-

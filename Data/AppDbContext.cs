@@ -12,7 +12,7 @@ namespace YurtBursu.Api.Data
 		public DbSet<Student> Students => Set<Student>();
 		public DbSet<BursHistory> BursHistories => Set<BursHistory>();
 		public DbSet<GalleryItem> Gallery => Set<GalleryItem>();
-		public DbSet<NotificationToken> NotificationTokens => Set<NotificationToken>();
+        public DbSet<NotificationToken> NotificationTokens => Set<NotificationToken>();
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
@@ -50,18 +50,18 @@ namespace YurtBursu.Api.Data
 				entity.Property(e => e.CreatedAt).IsRequired();
 			});
 
-			modelBuilder.Entity<NotificationToken>(entity =>
-			{
-				entity.ToTable("NotificationTokens");
-				entity.HasKey(e => e.Id);
-				entity.Property(e => e.Token).IsRequired().HasMaxLength(4096);
-				entity.Property(e => e.CreatedAt).IsRequired();
-				entity.HasIndex(e => e.Token).IsUnique(false);
-				entity.HasOne<Student>()
-					.WithMany()
-					.HasForeignKey(e => e.StudentId)
-					.OnDelete(DeleteBehavior.Cascade);
-			});
+            modelBuilder.Entity<NotificationToken>(entity =>
+            {
+                entity.ToTable("NotificationTokens");
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Token).IsRequired().HasMaxLength(4096);
+                entity.Property(e => e.CreatedAt).IsRequired();
+                entity.HasIndex(e => e.Token).IsUnique(false);
+                entity.HasOne<Student>()
+                    .WithMany()
+                    .HasForeignKey(e => e.StudentId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
 		}
 	}
 }

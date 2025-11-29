@@ -16,16 +16,12 @@ namespace YurtBursu.Api.Controllers
 		}
 
 		/// <summary>
-		/// Saves an image URL to the gallery. Protected by BasicAuth middleware.
+		/// Uploads an image file to the gallery. Protected by BasicAuth middleware.
 		/// </summary>
 		[HttpPost("upload")]
-		public async Task<ActionResult<GalleryItem>> Upload([FromBody] UploadRequest request, CancellationToken cancellationToken)
+		public async Task<ActionResult<GalleryItem>> Upload([FromForm] IFormFile file, CancellationToken cancellationToken)
 		{
-			if (request is null || string.IsNullOrWhiteSpace(request.Url))
-			{
-				return BadRequest(new { error = "Url is required." });
-			}
-			var item = await _galleryService.AddAsync(request.Url, cancellationToken);
+			var item = await _galleryService.UploadImageAsync(file, cancellationToken);
 			return Ok(item);
 		}
 
@@ -39,10 +35,6 @@ namespace YurtBursu.Api.Controllers
 			return Ok(items);
 		}
 
-		public class UploadRequest
-		{
-			public string Url { get; set; } = string.Empty;
-		}
 	}
 }
 

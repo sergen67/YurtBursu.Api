@@ -3,6 +3,7 @@ using YurtBursu.Api.Data;
 using YurtBursu.Api.Middleware;
 using YurtBursu.Api.Repositories;
 using YurtBursu.Api.Services;
+using YurtBursu.Api.Swagger;
 using Microsoft.AspNetCore.RateLimiting;
 using System.Threading.RateLimiting;
 
@@ -11,7 +12,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.OperationFilter<FileUploadOperationFilter>();
+});
 builder.Services.AddCors(options =>
 {
 	options.AddPolicy("DefaultCors", policy =>
@@ -52,6 +56,8 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
+app.UseStaticFiles(); // Enable static file serving for uploads
+
 app.UseMiddleware<ErrorHandlingMiddleware>();
 app.UseCors("DefaultCors");
 app.UseRateLimiter();
@@ -63,5 +69,3 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
-
-

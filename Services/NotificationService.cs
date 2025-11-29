@@ -51,34 +51,54 @@ namespace YurtBursu.Api.Services
                 }
 
                 if (credential == null)
-                    throw new InvalidOperationException("Firebase credentials missing. Set FIREBASE_CREDENTIALS_JSON or FIREBASE_CREDENTIALS_FILE.");
-
-                // FirebaseAdmin 3.4.0 — DEFAULT INSTANCE sorunsuz
-                FirebaseApp.Create(new AppOptions
                 {
-                    Credential = credential
-                });
+                    // throw new InvalidOperationException("Firebase credentials missing. Set FIREBASE_CREDENTIALS_JSON or FIREBASE_CREDENTIALS_FILE.");
+                    // Don't throw to allow app startup without firebase credentials
+                    return; 
+                }
 
-                _initialized = true;
+                try 
+                {
+                    // FirebaseAdmin 3.4.0 — DEFAULT INSTANCE sorunsuz
+                    FirebaseApp.Create(new AppOptions
+                    {
+                        Credential = credential
+                    });
+                    _initialized = true;
+                }
+                catch
+                {
+                    // Ignore if already exists or invalid
+                }
             }
         }
 
         public async Task SaveTokenAsync(int studentId, string token, CancellationToken cancellationToken = default)
         {
             InitializeFirebase(_configuration);
-            await _repo.SaveTokenAsync(studentId, token, cancellationToken);
+            if (_initialized) 
+                await _repo.SaveTokenAsync(studentId, token, cancellationToken);
         }
 
         public async Task<int> SendNotificationToAllAsync(string title, string body, CancellationToken cancellationToken = default)
         {
             InitializeFirebase(_configuration);
+            if (!_initialized) return 0;
+
             var tokens = await _repo.GetAllTokensAsync(cancellationToken);
             var count = 0;
 
             foreach (var token in tokens)
             {
-                await SendNotificationToTokenAsync(token, title, body, cancellationToken);
-                count++;
+                try 
+                {
+                    await SendNotificationToTokenAsync(token, title, body, cancellationToken);
+                    count++;
+                }
+                catch
+                {
+                    // Ignore individual send errors
+                }
             }
 
             return count;
@@ -86,7 +106,7 @@ namespace YurtBursu.Api.Services
 
         public async Task SendNotificationToTokenAsync(string token, string title, string body, CancellationToken cancellationToken = default)
         {
-            InitializeFirebase(_configuration);
+            // InitializeFirebase(_configuration); // Already initialized in caller
             var message = new Message
             {
                 Token = token,

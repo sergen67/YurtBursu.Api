@@ -35,5 +35,3 @@ namespace YurtBursu.Api.Repositories
 		}
 	}
 }
-
-
