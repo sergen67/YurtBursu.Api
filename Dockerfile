@@ -4,8 +4,12 @@ EXPOSE 8080
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
+
+# Copy project file and restore dependencies
 COPY YurtBursu.Api.csproj .
 RUN dotnet restore YurtBursu.Api.csproj
+
+# Copy all source files
 COPY Controllers/ ./Controllers/
 COPY Data/ ./Data/
 COPY DTOs/ ./DTOs/
@@ -16,6 +20,11 @@ COPY Repositories/ ./Repositories/
 COPY Services/ ./Services/
 COPY Program.cs .
 COPY appsettings.json .
+
+# Verify Models folder is copied (for debugging)
+RUN ls -la Models/ || dir Models
+
+# Build and publish
 RUN dotnet publish YurtBursu.Api.csproj -c Release -o /app/publish
 
 FROM base AS final
